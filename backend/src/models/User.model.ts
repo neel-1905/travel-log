@@ -7,9 +7,14 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    password: {
+      type: String,
+      required: false,
+    },
     username: {
       type: String,
       required: false,
+      unique: true,
     },
     profileImg: {
       type: String,

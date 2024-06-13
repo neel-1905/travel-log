@@ -4,6 +4,7 @@ interface SuccessResponse {
   success: true;
   message: string;
   data?: any;
+  statusCode: number;
 }
 
 interface ErrorResponse {
@@ -13,13 +14,19 @@ interface ErrorResponse {
   statusCode: number;
 }
 
-export const sendSuccess = (res: Response, message: string, data?: any) => {
+export const sendSuccess = (
+  res: Response,
+  message: string,
+  data?: any,
+  statusCode: number = 200
+) => {
   const response: SuccessResponse = {
     success: true,
     message,
     data,
+    statusCode,
   };
-  res.status(200).json(response);
+  res.status(statusCode).json(response);
 };
 
 export const sendError = (
