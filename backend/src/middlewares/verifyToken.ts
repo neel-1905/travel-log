@@ -35,11 +35,7 @@ const verifyAdmin = (req: Request, res: Response, next: NextFunction) => {
     if (req.user.role === "ADMIN") {
       next();
     } else {
-      return sendError(
-        res,
-        `You are not authorized to access this data ${req.params.id}`,
-        401
-      );
+      return sendError(res, `You are not authorized to access this data`, 401);
     }
   });
 };

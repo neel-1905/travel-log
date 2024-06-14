@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { User } from "../models";
+import { TripModel, User } from "../models";
 import { sendError, sendSuccess } from "../utils/responseHandlers";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -7,8 +7,20 @@ import jwt from "jsonwebtoken";
 export const userController = {
   getAllUsers: async (req: Request, res: Response) => {
     try {
-      const users = await User.find();
+      const users = await User.find().select("-password");
       res.status(200).json({ message: "Users Found!", users });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching users", error });
+    }
+  },
+
+  getUserById: async (req: Request, res: Response) => {
+    try {
+      const user = await User.findOne({ _id: req.params.id }).select(
+        "-password"
+      );
+      // res.status(200).json({ message: "Users Found!", user });
+      return sendSuccess(res, "User Found!", user, 200);
     } catch (error) {
       res.status(500).json({ message: "Error fetching users", error });
     }
@@ -81,8 +93,66 @@ export const userController = {
 
         return sendSuccess(res, "User Login Successful!", data, 200);
       }
+
+      return sendError(res, "Invalid Credentials", 400);
     } catch (error) {
       return sendError(res, error.message, 500);
     }
   },
+
+  updateUser: async (req: Request, res: Response) => {
+    try {
+      const { password, email, ...updates } = req.body; // Exclude password field
+
+      const userWithUsernameExists = await User.findOne({
+        username: updates.username,
+      });
+
+      if (userWithUsernameExists) {
+        return sendError(
+          res,
+          "This username is already used! Try another one",
+          400
+        );
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(req.params.id, updates, {
+        new: true,
+      });
+
+      if (!updatedUser) {
+        return sendError(res, "User not found", 404);
+      }
+
+      return sendSuccess(res, "User updated!", updatedUser, 200);
+    } catch (error) {
+      return sendError(res, "Error updating user", 500);
+    }
+  },
+
+  deleteUser: async (req: Request, res: Response) => {
+    try {
+      await User.findByIdAndDelete({
+        _id: req.params.id,
+      });
+
+      await TripModel.deleteOne({ user: req.params.id });
+
+      return sendSuccess(res, "User Deleted!", {}, 200);
+    } catch (error) {
+      return sendError(res, error, 500);
+    }
+  },
+
+  // forgotPassword: async (req: Request, res: Response) => {
+
+  //   const {email} = req.body
+
+  //   const user = await User.findOne({email})
+
+  //   if(!user){
+  //     return sendError(res, "Cannot find user with this email", 404)
+  //   }
+
+  // }
 };
