@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: false,
+      required: true,
       unique: true,
     },
     profileImg: {
@@ -25,6 +25,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["ADMIN", "USER"],
       default: "USER",
+    },
+    description: {
+      type: String,
+      required: false,
+      default: "",
     },
   },
   { timestamps: true }
