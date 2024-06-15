@@ -4,6 +4,6 @@ export type USER = {
   email: string;
   password: string;
   username: string;
-  profileImg: string;
+  profileImg?: string;
   role: ROLE;
 };

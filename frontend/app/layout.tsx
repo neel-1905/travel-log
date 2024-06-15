@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import UiProvider from "@/providers/UiProvider";
 import AuthProvider from "@/providers/AuthProvider";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className}  theme`}>
+      <body className={`${inter.className} light-theme  bg-background `}>
         <AuthProvider>
           <UiProvider>{children}</UiProvider>
         </AuthProvider>
+
+        <Toaster />
       </body>
     </html>
   );

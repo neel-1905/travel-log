@@ -1,4 +1,4 @@
 export const authEndpoints = {
   login: `/users/login`,
-  signUp: `/users/create`,
+  signUp: `/users`,
 };

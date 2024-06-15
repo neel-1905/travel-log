@@ -1,12 +1,15 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
 import { Spinner } from "@nextui-org/spinner";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import FormInput from "../inputs/FormInput";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginValidations } from "@/validations/login.validations";
+import PrimaryButton from "../inputs/PrimaryButton";
+import Link from "next/link";
 
 type LOGIN_FORM = {
   email: string;
@@ -31,6 +34,7 @@ const LoginForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<LOGIN_FORM>({
     mode: "all",
+    resolver: zodResolver(loginValidations),
   });
 
   const onSubmit = async (data: LOGIN_FORM) => {
@@ -52,30 +56,33 @@ const LoginForm = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col gap-3">
-          <Input
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <div className="flex flex-col gap-4">
+          <FormInput
             label="Email"
-            labelPlacement="outside"
-            className="border border-gray-400"
-            {...register("email", {
-              required: "Email is required!",
-            })}
+            {...register("email")}
+            isClearable
             errorMessage={errors.email?.message}
             isInvalid={!!errors.email?.message}
           />
-          <Input
+          <FormInput
             label="Password"
             type="password"
-            labelPlacement="outside"
-            className="border border-gray-400"
-            {...register("password", {
-              required: "Password is required!",
-            })}
+            {...register("password")}
             errorMessage={errors.password?.message}
+            isInvalid={!!errors.password?.message}
           />
 
-          <Button type="submit">{isSubmitting ? <Spinner /> : "Submit"}</Button>
+          <PrimaryButton type="submit">
+            {isSubmitting ? <Spinner /> : "Submit"}
+          </PrimaryButton>
+
+          <p className="text-center text-primary-800">
+            Not a member?{" "}
+            <Link href={`/signUp`} className="hover:text-primary-600">
+              Sign Up
+            </Link>
+          </p>
         </div>
       </form>
     </>
